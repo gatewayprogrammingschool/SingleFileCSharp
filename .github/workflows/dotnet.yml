@@ -7,6 +7,10 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
+    paths-ignore:
+      - '*.yml'
+      - '*.yaml'
+      - '*.md'
 
 jobs:
   build:
@@ -30,7 +34,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
-        
+
         # This is important if you want auto-versioning.
       - name: Setup Dependencies
         run: |
@@ -44,13 +48,12 @@ jobs:
       - name: Build Debug and Test
         if: ${{ github.event_name == 'push' }}
         run: pwsh ./scripts/Publish.ps1 "${{ secrets.GITHUB_TOKEN }}" -Verbose -WhatIf
-          # cd ./SingleFileCSharp 
+          # cd ./SingleFileCSharp
           # . ./build.sh Compile Push --root . --GithubToken "${{ secrets.GITHUB_TOKEN }}"
-          
+
 
       - name: Build Release and Publish
         if: ${{ github.event_name == 'release' || github.event_name == 'workflow_dispatch' }}
         run: pwsh ./scripts/Publish.ps1 "${{ secrets.GITHUB_TOKEN }}" -Verbose
-          # cd ./SingleFileCSharp 
+          # cd ./SingleFileCSharp
           # . ./build.sh Compile Push --root . --GithubToken "${{ secrets.GITHUB_TOKEN }}"
-          

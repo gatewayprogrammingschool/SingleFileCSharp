@@ -14,11 +14,16 @@ name: "CodeQL"
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '*.yml'
+      - '*.yaml'
+      - '*.md'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ main ]
   schedule:
     - cron: '27 17 * * 1'
+
 
 jobs:
   analyze:
@@ -60,7 +65,7 @@ jobs:
           nuget config -set signatureValidationMode=accept
           dotnet tool install -g nuke.globaltool --prerelease
           dotnet tool install -g gitversion.tool --prerelease
-      
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
