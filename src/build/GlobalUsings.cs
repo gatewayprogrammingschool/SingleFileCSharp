@@ -24,4 +24,15 @@ global using Nuke.Common.Utilities.Collections;
 
 global using static System.StringComparison;
 
-global using SingleFileCSharp.SingFile;
+global using Newtonsoft.Json;
+
+global using Serilog;
+
+global using YamlDotNet.Serialization;
+global using YamlDotNet.Serialization.NamingConventions;
+
+global using Project = Nuke.Common.ProjectModel.Project;
+global using Solution = Nuke.Common.ProjectModel.Solution;
+
+global using static Nuke.Common.NukeBuild;
+

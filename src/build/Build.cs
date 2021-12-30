@@ -7,126 +7,113 @@
 
 namespace SingleFileCSharp;
 
-[CheckBuildProjectConfigurations , ShutdownDotNetAfterServerBuild ,]
-internal class Build : Parser
+[ CheckBuildProjectConfigurations, ShutdownDotNetAfterServerBuild, ]
+partial class Build : NukeBuild
 {
-    public static int Main()
-        => Execute<Build>(static x => x.Run);
+    [ Solution ]
+    protected Solution? Solution { get; }
 
-    protected override void OnBuildCreated()
-    {
-        base.OnBuildCreated();
-    }
-
-    protected override void OnBuildInitialized()
-    {
-        AbsolutePath newSln = SolutionDirectory.GlobFiles("*.sln")
-            .FirstOrDefault(defaultValue: Solution?.Path ?? default);
-
-        if (newSln is not null)
-        {
-        }
-
-        base.OnBuildInitialized();
-    }
-
-    private Target Clean => _ => _
+    Target Clean => _ => _
         .Before(Restore)
-        .Executes(() => FileSystemTasks.EnsureCleanDirectory(ArtifactsDirectory));
+        .Executes(static () => FileSystemTasks.EnsureCleanDirectory(ArtifactsDirectory));
 
-
-    private Target Restore => _ =>
+    Target Restore => _ =>
     {
-        IReadOnlyCollection<Output> Actions() =>
-            DotNetTasks.DotNetRestore(s =>
-            {
-                s = s.SetProjectFile(Solution)
-                    .SetProcessWorkingDirectory(Solution!.Directory);
-                if (File.Exists(Solution!.Directory / "nuget.config"))
+        IReadOnlyCollection<Output> Actions()
+            => DotNetTasks.DotNetRestore(s =>
                 {
-                    s = s.SetConfigFile(Solution.Directory / "nuget.config");
-                }
+                    s = s.SetProjectFile(Solution)
+                        .SetProcessWorkingDirectory(Solution!.Directory);
 
-                return s;
-            });
+                    if (File.Exists(Solution!.Directory / "nuget.config"))
+                    {
+                        s = s.SetConfigFile(Solution.Directory / "nuget.config");
+                    }
+
+                    return s;
+                }
+            );
 
         return _
             .Executes(Actions);
     };
 
-    private Target Compile => _ => _
+    Target Compile => _ => _
         .DependsOn(Expand)
         .DependsOn(Restore)
         .Executes(() =>
             DotNetTasks.DotNetBuild(s =>
-            {
-                s = s.SetProjectFile(Solution)
-                    .SetConfiguration(Configuration)
-                    .SetProcessWorkingDirectory(Solution!.Directory)
-                    .EnableNoRestore();
-
-                if (GitVersion is not null)
                 {
-                    s = s.SetAssemblyVersion(GitVersion?.AssemblySemVer)
-                        .SetFileVersion(GitVersion?.AssemblySemFileVer)
-                        .SetInformationalVersion(GitVersion?.InformationalVersion);
+                    s = s.SetProjectFile(Solution)
+                        .SetConfiguration(_configuration)
+                        .SetProcessWorkingDirectory(Solution!.Directory)
+                        .EnableNoRestore();
+
+                    if (_gitVersion is not null)
+                    {
+                        s = s.SetAssemblyVersion(_gitVersion?.AssemblySemVer)
+                            .SetFileVersion(_gitVersion?.AssemblySemFileVer)
+                            .SetInformationalVersion(_gitVersion?.InformationalVersion);
+                    }
+
+                    return s;
                 }
+            )
+        );
 
-                return s;
-            }));
-
-    private Target Run => _ => _
+    Target Run => _ => _
         .DependsOn(Compile)
-        .Executes(() =>
-        {
-            IReadOnlyCollection<AbsolutePath> files = RootDirectory
-                .GlobFiles("**/bin/**/*.exe");
-
-            foreach (var path in files)
+        .Executes(static () =>
             {
-                if (!path.Contains("build.exe"))
+                IReadOnlyCollection<AbsolutePath> files = RootDirectory
+                    .GlobFiles("**/bin/**/*.exe");
+
+                foreach (AbsolutePath path in files)
                 {
-                    ProcessStartInfo info = new()
+                    if (!path.Contains("build.exe"))
                     {
-                        FileName = path,
-                        WorkingDirectory = Path.GetDirectoryName(path) ,
-                        RedirectStandardOutput = true ,
-                        RedirectStandardError = true ,
-                    };
+                        ProcessStartInfo info = new()
+                        {
+                            FileName = path,
+                            WorkingDirectory = Path.GetDirectoryName(path),
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                        };
 
-                    Process? process = Process.Start(info);
+                        Process? process = Process.Start(info);
 
-                    process?.WaitForExit();
+                        process?.WaitForExit();
 
-                    Serilog.Log.Information(process?.StandardOutput.ReadToEnd());
+                        Log.Information(process?.StandardOutput.ReadToEnd());
 
-                    if(process?.ExitCode != 0)
-                    {
-                        Serilog.Log.Error(process?.StandardError.ReadToEnd());
+                        if (process?.ExitCode != 0)
+                        {
+                            Log.Error(process?.StandardError.ReadToEnd());
+                        }
                     }
                 }
             }
-        });
+        );
 
-    private Target Push => _ => _
+    Target Push => _ => _
         .DependsOn(Expand)
         .Executes(() =>
             {
                 ProcessStartInfo info = new()
                 {
-                    FileName = "git" ,
+                    FileName = "git",
                     Arguments =
-                        $"push https://sharpninja:{GithubToken}@github.com/sharpninja/CSharpExploration HEAD:main" ,
-                    WorkingDirectory = RootDirectory ,
-                    RedirectStandardOutput = true ,
-                    RedirectStandardError = true ,
+                        $"push https://sharpninja:{GithubToken}@github.com/sharpninja/CSharpExploration HEAD:main",
+                    WorkingDirectory = RootDirectory,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                 };
 
                 Process? process = Process.Start(info);
 
                 process?.WaitForExit();
 
-                Serilog.Log.Information(process?.StandardOutput.ReadToEnd());
+                Log.Information(process?.StandardOutput.ReadToEnd());
 
                 if ((process?.ExitCode ?? -1) != 0)
                 {
@@ -135,7 +122,7 @@ internal class Build : Parser
             }
         );
 
-    private Target Expand => _ => _
+    Target Expand => _ => _
         .Executes(() =>
             {
                 const RegexOptions REGEX_OPTIONS =
@@ -152,11 +139,11 @@ internal class Build : Parser
                 // case-insensitive.
                 List<object> skipPatterns = new()
                 {
-                    new Regex(@"\b(build|obj)\b" , REGEX_OPTIONS) ,
+                    new Regex(@"\b(build|obj)\b", REGEX_OPTIONS),
                 };
 
-                int expandedCount = 0;
-                bool expanded = false;
+                var expandedCount = 0;
+                var expanded = false;
 
                 foreach (string file in files)
                 {
@@ -164,11 +151,13 @@ internal class Build : Parser
 
                     if (dirPath is null or "")
                     {
-                        Serilog.Log.Warning($"Could not get directory name for [{file}]");
+                        Log.Warning($"Could not get directory name for [{file}]");
+
                         continue;
                     }
 
-                    bool toBreak = false;
+                    var toBreak = false;
+
                     foreach (object pattern in skipPatterns)
                     {
                         switch (pattern)
@@ -180,22 +169,23 @@ internal class Build : Parser
                                 }
                                 else
                                 {
-                                    Serilog.Log.Information($"[Expand] [{r}] does not match [{dirPath}]");
+                                    Log.Information($"[Expand] [{r}] does not match [{dirPath}]");
                                 }
 
                                 break;
 
                             case string s:
                                 //Debugger.Launch();
-                                if (dirPath?.Contains(s ,
-                                    InvariantCultureIgnoreCase
-                                ) == true)
+                                if (dirPath?.Contains(s,
+                                        InvariantCultureIgnoreCase
+                                    ) ==
+                                    true)
                                 {
                                     toBreak = true;
                                 }
                                 else
                                 {
-                                    Serilog.Log.Information($"[Expand] [{s}] does not match [{dirPath}]");
+                                    Log.Information($"[Expand] [{s}] does not match [{dirPath}]");
                                 }
 
                                 break;
@@ -229,22 +219,22 @@ internal class Build : Parser
 
                 if (expanded)
                 {
-                    Serilog.Log.Information($"[Expand] Expanded {expandedCount} files.");
+                    Log.Information($"[Expand] Expanded {expandedCount} files.");
 
                     ProcessStartInfo info = new()
                     {
-                        FileName = "git" ,
-                        Arguments = $"commit -a -m \"Expanded {expandedCount} files.\"" ,
-                        WorkingDirectory = RootDirectory ,
-                        RedirectStandardOutput = true ,
-                        RedirectStandardError = true ,
+                        FileName = "git",
+                        Arguments = $"commit -a -m \"Expanded {expandedCount} files.\"",
+                        WorkingDirectory = RootDirectory,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                     };
 
                     Process? process = Process.Start(info);
 
                     process?.WaitForExit();
 
-                    Serilog.Log.Information(process?.StandardOutput.ReadToEnd());
+                    Log.Information(process?.StandardOutput.ReadToEnd());
 
                     if ((process?.ExitCode ?? -1) != 0)
                     {
@@ -253,4 +243,21 @@ internal class Build : Parser
                 }
             }
         );
+
+    public Build()
+        => _instance = this;
+
+    public static int Main()
+        => Execute<Build>(static x => x.Run);
+
+    [ Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)") ]
+    protected readonly Configuration _configuration = IsLocalBuild
+        ? Configuration.Debug
+        : Configuration.Release;
+
+    [ GitRepository ] protected readonly GitRepository? _gitRepository;
+    [ GitVersion ] protected readonly GitVersion? _gitVersion;
+    // ReSharper disable once InconsistentNaming
+    string? _githubToken;
+
 }
