@@ -65,6 +65,7 @@ jobs:
           nuget config -set signatureValidationMode=accept
           dotnet tool install -g nuke.globaltool --prerelease
           dotnet tool install -g gitversion.tool --prerelease
+          dotnet tool install -g powershell
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -77,9 +78,7 @@ jobs:
           # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
       - name: Build
-        run: |
-          cd ./SingleFileCSharp
-          . ./build.sh --root .
+        run: pwsh ./scripts/publish.ps1 "xxx" -WorkingFolder ./src -Verbose -WhatIf
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
