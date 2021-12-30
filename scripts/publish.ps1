@@ -38,61 +38,65 @@ try {
 
     $ConfigFile = $config.FullName
 
-    $project = Get-ChildItem -Path ./src "$projectName.csproj" -Recurse -ErrorAction Stop
+    $project = Get-ChildItem "$projectName.csproj" -Recurse -ErrorAction Stop
 
     if($project) {
         $csproj = $project.FullName
-        "Building [$csproj]..."
+        Write-Information "Building [$csproj]..."
 
-        & dotnet build $csproj -c Release --no-restore --nologo #-v quiet
+        & dotnet restore $csproj --nologo #-v quiet
 
-        Test-ExitCode $LASTEXITCODE "Failed to build [$csproj]."
+        Test-ExitCode $LASTEXITCODE "Failed to resore [$csproj]."
 
-        "Getting Packages..."
+        if($WhatIf) {
+            & dotnet build $csproj -c Debug --no-restore --nologo #-v quiet
+    
+            Test-ExitCode $LASTEXITCODE "Failed to build [$csproj]."
+        } else {
+            & dotnet pack $csproj -c Release --no-restore --nologo -v quiet
 
-        $packages = Get-ChildItem "$projectName.*.symbols.nupkg" -Path ./src -Recurse -ErrorAction Stop -Verbose `
-            | Sort-Object ModifiedDate;
+            Write-Information "Getting Packages..."
 
-        if((-not $packages) -or ($packages.Length -eq 0)) {
-            $packages = Get-ChildItem "$projectName.*.nupkg" -Path ./src -Recurse -ErrorAction Stop -Verbose `
+            $packages = Get-ChildItem "$projectName.*.symbols.nupkg" -Path $WorkingFolder -Recurse -ErrorAction Stop -Verbose `
                 | Sort-Object ModifiedDate;
-        }
 
-        if((-not $packages) -or ($packages.Length -eq 0)) {
-            throw "No packages were built for [$csproj]."
-        }
+            if((-not $packages) -or ($packages.Length -eq 0)) {
+                $packages = Get-ChildItem "$projectName.*.nupkg" -Path $WorkingFolder -Recurse -ErrorAction Stop -Verbose `
+                    | Sort-Object ModifiedDate;
+            }
 
-        "Packages to publish..."
+            if((-not $packages) -or ($packages.Length -eq 0)) {
+                throw "No packages were built for [$csproj]."
+            }
 
-        $packages `
-            | Sort-Object Directory, Name `
-            | Format-Table Name, Directory
+            Write-Information "Packages to publish..."
 
-        $packages `
-            | ForEach-Object -Verbose -Process {
-                $package = $_
+            $packages `
+                | Sort-Object Directory, Name `
+                | Format-Table Name, Directory
 
-                try {
-                    $Name = $package.Name
+            $packages `
+                | ForEach-Object -Verbose -Process {
+                    $package = $_
 
-                    Set-Location $package.Directory
+                    try {
+                        $Name = $package.Name
 
-                    Copy-Item $ConfigFile . -ErrorAction Stop
+                        Set-Location $package.Directory
 
-                    if(!$WhatIf) {
-                        "& dotnet nuget push $Name --source `"nuget`" -k `"`${token}`" --skip-duplicate"
+                        Copy-Item $ConfigFile . -ErrorAction Stop
+
+                        Write-Information "& dotnet nuget push $Name --source `"nuget`" -k `"`${token}`" --skip-duplicate"
                         & dotnet nuget push $Name --source "nuget" -k "${token}" --skip-duplicate
-                    } else {
-                        "WhatIf: & dotnet nuget push $Name -k `"`${token}`"  --config $ConfigFile # --skip-duplicate"
+
+                        Test-ExitCode $LASTEXITCODE "Failed to push [${package.Name}]."
+                    }
+                    catch {
+                        throw $_
                     }
 
-                    Test-ExitCode $LASTEXITCODE "Failed to push [${package.Name}]."
-                }
-                catch {
-                    throw $_
-                }
-
-                "Publish Finished Successfully."
+                    Write-Information "Publish Finished Successfully."
+            }
         }
     }
     else {

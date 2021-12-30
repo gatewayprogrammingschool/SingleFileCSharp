@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{489F5B7A-3ECF-42FF-81A5-5D4189C4A773}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		GitVersion.yml = GitVersion.yml
+		nuget.config = nuget.config
+		..\scripts\publish.ps1 = ..\scripts\publish.ps1
+		SfcsTemplate\src\split.cs = SfcsTemplate\src\split.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{406FD816-375C-475A-9E8B-505FA2F33E4C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-singlefilecsharp", "build\dotnet-singlefilecsharp.csproj", "{06552E67-1B29-48B6-97B6-36DFED2AE2EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06552E67-1B29-48B6-97B6-36DFED2AE2EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06552E67-1B29-48B6-97B6-36DFED2AE2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06552E67-1B29-48B6-97B6-36DFED2AE2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06552E67-1B29-48B6-97B6-36DFED2AE2EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{06552E67-1B29-48B6-97B6-36DFED2AE2EE} = {406FD816-375C-475A-9E8B-505FA2F33E4C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CF5615B6-3489-451C-A268-83E8796936E4}
+	EndGlobalSection
+EndGlobal
