@@ -406,3 +406,4 @@ FodyWeavers.xsd
 /.github/workflows/.idea/.idea.workflows.dir/.idea/encodings.xml
 /.github/workflows/.idea/.idea.workflows.dir/.idea/indexLayout.xml
 /.github/workflows/.idea/.idea.workflows.dir/.idea/misc.xml
+*.7z

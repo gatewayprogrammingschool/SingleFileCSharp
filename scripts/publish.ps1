@@ -4,6 +4,8 @@ param(
     [switch]$WhatIf=$false
 )
 
+$WorkingFolder = Resolve-Path $WorkingFolder -ErrorAction Stop
+
 $exitCode = 0;
 
 function Test-ExitCode {
@@ -42,34 +44,45 @@ try {
 
     if($project) {
         $csproj = $project.FullName
-        Write-Information "Building [$csproj]..."
+
+        Write-Verbose -Verbose:$Verbose -Message "Restoring [$csproj]..."
 
         & dotnet restore $csproj --nologo #-v quiet
 
-        Test-ExitCode $LASTEXITCODE "Failed to resore [$csproj]."
+        Test-ExitCode $LASTEXITCODE "Failed to restore [$csproj]."
 
         if($WhatIf) {
+            Write-Verbose -Verbose:$Verbose -Message "Building [$csproj]..."
+
             & dotnet build $csproj -c Debug --no-restore --nologo #-v quiet
     
             Test-ExitCode $LASTEXITCODE "Failed to build [$csproj]."
         } else {
-            & dotnet pack $csproj -c Release --no-restore --nologo -v quiet
+            Write-Verbose -Verbose:$Verbose -Message "Packing [$csproj]..."
 
-            Write-Information "Getting Packages..."
+            & dotnet pack $csproj -c Release --no-restore --nologo #-v quiet
+    
+            Test-ExitCode $LASTEXITCODE "Failed to pack [$csproj]."
 
-            $packages = Get-ChildItem "$projectName.*.symbols.nupkg" -Path $WorkingFolder -Recurse -ErrorAction Stop -Verbose `
-                | Sort-Object ModifiedDate;
+            Write-Verbose -Verbose:$Verbose -Message "Getting Packages in $WorkingFolder ..."
 
-            if((-not $packages) -or ($packages.Length -eq 0)) {
-                $packages = Get-ChildItem "$projectName.*.nupkg" -Path $WorkingFolder -Recurse -ErrorAction Stop -Verbose `
-                    | Sort-Object ModifiedDate;
+            $pkgsPattern = $projectName + ".*.symbols.nupkg"
+            "$packages = Get-ChildItem $pkgsPattern -Path $WorkingFolder -Recurse -Verbose:`$$Verbose  -ErrorAction Stop"
+            $packages = Get-ChildItem $pkgsPattern -Path $WorkingFolder -Recurse -Verbose:$Verbose  -ErrorAction Stop
+
+            if(($null -eq $packages) -or ($packages.Length -eq 0)) {
+                $pkgsPattern = $projectName + ".*.nupkg"
+                "$packages = Get-ChildItem $pkgsPattern -Path $WorkingFolder -Recurse -Verbose:`$$Verbose  -ErrorAction Stop"
+                $packages = Get-ChildItem $pkgsPattern -Path $WorkingFolder -Recurse -Verbose:$Verbose  -ErrorAction Stop
             }
 
-            if((-not $packages) -or ($packages.Length -eq 0)) {
+            if(($null -eq $packages) -or ($packages.Length -eq 0)) {
                 throw "No packages were built for [$csproj]."
             }
 
-            Write-Information "Packages to publish..."
+            $packages = ($packages | Sort-Object ModifiedDate)
+
+            Write-Verbose -Verbose:$Verbose -Message "Packages to publish..."
 
             $packages `
                 | Sort-Object Directory, Name `
@@ -86,7 +99,7 @@ try {
 
                         Copy-Item $ConfigFile . -ErrorAction Stop
 
-                        Write-Information "& dotnet nuget push $Name --source `"nuget`" -k `"`${token}`" --skip-duplicate"
+                        Write-Verbose -Verbose:$Verbose -Message "& dotnet nuget push $Name --source `"nuget`" -k `"`${token}`" --skip-duplicate"
                         & dotnet nuget push $Name --source "nuget" -k "${token}" --skip-duplicate
 
                         Test-ExitCode $LASTEXITCODE "Failed to push [${package.Name}]."
@@ -95,7 +108,7 @@ try {
                         throw $_
                     }
 
-                    Write-Information "Publish Finished Successfully."
+                    Write-Verbose -Verbose:$Verbose -Message "Publish Finished Successfully."
             }
         }
     }
