@@ -1,4 +1,4 @@
-# CSharpExploration
+# SingleFileCSharp
 
 Describe the project.
 
@@ -6,13 +6,13 @@ Describe the project.
 
 | Technical | Social |
 |---|---|
-| [![.NET](https://github.com/OrganizationName/CSharpExploration/actions/workflows/dotnet.yml/badge.svg)](https://github.com/OrganizationName/CSharpExploration/actions/workflows/dotnet.yml) | [![Repo Stars](https://img.shields.io/github/stars/OrganizationName/CSharpExploration?label=Repository%20Stars&style=plastic)](https://github.com/OrganizationName/CSharpExploration) |
-| [![Codacy Security Scan](https://github.com/OrganizationName/CSharpExploration/actions/workflows/codacy-analysis.yml/badge.svg)](https://github.com/OrganizationName/CSharpExploration/actions/workflows/codacy-analysis.yml) |  |
-| [![CodeQL](https://github.com/OrganizationName/CSharpExploration/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OrganizationName/CSharpExploration/actions/workflows/codeql-analysis.yml) | [![Discussions](https://img.shields.io/github/discussions/OrganizationName/CSharpExploration)](https://github.com/OrganizationName/CSharpExploration/discussions) |
+| [![.NET](https://github.com/gatewayprogrammingschool/SingleFileCSharp/actions/workflows/dotnet.yml/badge.svg)](https://github.com/gatewayprogrammingschool/SingleFileCSharp/actions/workflows/dotnet.yml) | [![Repo Stars](https://img.shields.io/github/stars/gatewayprogrammingschool/SingleFileCSharp?label=Repository%20Stars&style=plastic)](https://github.com/gatewayprogrammingschool/SingleFileCSharp) |
+| [![Codacy Security Scan](https://github.com/gatewayprogrammingschool/SingleFileCSharp/actions/workflows/codacy-analysis.yml/badge.svg)](https://github.com/gatewayprogrammingschool/SingleFileCSharp/actions/workflows/codacy-analysis.yml) |  |
+| [![CodeQL](https://github.com/gatewayprogrammingschool/SingleFileCSharp/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/gatewayprogrammingschool/SingleFileCSharp/actions/workflows/codeql-analysis.yml) | [![Discussions](https://img.shields.io/github/discussions/gatewayprogrammingschool/SingleFileCSharp)](https://github.com/gatewayprogrammingschool/SingleFileCSharp/discussions) |
 
 ## Example Usage - Use Case 1
 
-[Source](https://github.com/OrganizationName/CSharpExploration/blob/main/tests/CSharpExploration.Tests/TestObject.cs) for `TestObject`
+[Source](https://github.com/gatewayprogrammingschool/SingleFileCSharp/blob/main/tests/SingleFileCSharp.Tests/TestObject.cs) for `TestObject`
 
 ```csharp
 
