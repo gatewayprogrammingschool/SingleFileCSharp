@@ -6,8 +6,6 @@ global using System.Xml.Linq;
 
 global using Nuke.Common.ProjectModel;
 
-global using JetBrains.Annotations;
-
 global using Microsoft.CodeAnalysis;
 global using Microsoft.CodeAnalysis.CSharp;
 global using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,6 +31,3 @@ global using YamlDotNet.Serialization.NamingConventions;
 
 global using Project = Nuke.Common.ProjectModel.Project;
 global using Solution = Nuke.Common.ProjectModel.Solution;
-
-global using static Nuke.Common.NukeBuild;
-

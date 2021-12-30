@@ -70,26 +70,28 @@ partial class Build : NukeBuild
 
                 foreach (AbsolutePath path in files)
                 {
-                    if (!path.Contains("build.exe"))
+                    if (path.Contains("build.exe"))
                     {
-                        ProcessStartInfo info = new()
-                        {
-                            FileName = path,
-                            WorkingDirectory = Path.GetDirectoryName(path),
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                        };
+                        continue;
+                    }
 
-                        Process? process = Process.Start(info);
+                    ProcessStartInfo info = new()
+                    {
+                        FileName = path,
+                        WorkingDirectory = Path.GetDirectoryName(path),
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
 
-                        process?.WaitForExit();
+                    Process? process = Process.Start(info);
 
-                        Log.Information(process?.StandardOutput.ReadToEnd());
+                    process?.WaitForExit();
 
-                        if (process?.ExitCode != 0)
-                        {
-                            Log.Error(process?.StandardError.ReadToEnd());
-                        }
+                    Log.Information(process?.StandardOutput.ReadToEnd());
+
+                    if (process?.ExitCode != 0)
+                    {
+                        Log.Error(process?.StandardError.ReadToEnd());
                     }
                 }
             }
@@ -217,29 +219,31 @@ partial class Build : NukeBuild
                     expanded |= didExpand;
                 }
 
-                if (expanded)
+                if (!expanded)
                 {
-                    Log.Information($"[Expand] Expanded {expandedCount} files.");
+                    return;
+                }
 
-                    ProcessStartInfo info = new()
-                    {
-                        FileName = "git",
-                        Arguments = $"commit -a -m \"Expanded {expandedCount} files.\"",
-                        WorkingDirectory = RootDirectory,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                    };
+                Log.Information($"[Expand] Expanded {expandedCount} files.");
 
-                    Process? process = Process.Start(info);
+                ProcessStartInfo info = new()
+                {
+                    FileName = "git",
+                    Arguments = $"commit -a -m \"Expanded {expandedCount} files.\"",
+                    WorkingDirectory = NukeBuild.RootDirectory,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                };
 
-                    process?.WaitForExit();
+                Process? process = Process.Start(info);
 
-                    Log.Information(process?.StandardOutput.ReadToEnd());
+                process?.WaitForExit();
 
-                    if ((process?.ExitCode ?? -1) != 0)
-                    {
-                        Console.Error.WriteLine(process?.StandardError.ReadToEnd());
-                    }
+                Log.Information(process?.StandardOutput.ReadToEnd());
+
+                if ((process?.ExitCode ?? -1) != 0)
+                {
+                    Console.Error.WriteLine(process?.StandardError.ReadToEnd());
                 }
             }
         );

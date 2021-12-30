@@ -2,6 +2,7 @@
 
 using System.Reflection;
 
+// ReSharper disable once UnusedMember.Global
 public class SfcsSolutionAttribute : SolutionAttribute
 {
     public SfcsSolutionAttribute()

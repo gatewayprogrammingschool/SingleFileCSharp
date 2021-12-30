@@ -129,11 +129,13 @@ partial class Build
                     _ => false,
                 };
 
-                if (processed)
+                if (!processed)
                 {
-                    result = string.Format(RESULT_TEMPLATE, $"Processed {file}");
-                    fileExpanded = true;
+                    continue;
                 }
+
+                result = string.Format(RESULT_TEMPLATE, $"Processed {file}");
+                fileExpanded = true;
             }
 
             result = string.Format(RESULT_TEMPLATE, $"Nothing to do in {file}");

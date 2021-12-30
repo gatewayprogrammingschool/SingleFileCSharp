@@ -55,13 +55,13 @@ try {
             Write-Verbose -Verbose:$Verbose -Message "Building [$csproj]..."
 
             & dotnet build $csproj -c Debug --no-restore --nologo #-v quiet
-    
+
             Test-ExitCode $LASTEXITCODE "Failed to build [$csproj]."
         } else {
             Write-Verbose -Verbose:$Verbose -Message "Packing [$csproj]..."
 
             & dotnet pack $csproj -c Release --no-restore --nologo #-v quiet
-    
+
             Test-ExitCode $LASTEXITCODE "Failed to pack [$csproj]."
 
             Write-Verbose -Verbose:$Verbose -Message "Getting Packages in $WorkingFolder ..."

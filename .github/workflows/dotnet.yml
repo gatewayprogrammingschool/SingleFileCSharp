@@ -52,4 +52,4 @@ jobs:
       - name: Build Release and Publish
         if: ${{ github.event_name == 'release' || github.event_name == 'workflow_dispatch' }}
         run: pwsh ./scripts/publish.ps1 "${{ secrets.NUGET_KEY }}" -WorkingFolder ./src -Verbose
-                                                                                                      
+
