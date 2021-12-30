@@ -47,14 +47,9 @@ jobs:
 
       - name: Build Debug and Test
         if: ${{ github.event_name == 'push' }}
-        run: pwsh ./scripts/publish.ps1 "${{ secrets.GITHUB_TOKEN }}" -WorkingFolder ./src -Verbose -WhatIf
-          # cd ./SingleFileCSharp
-          # . ./build.sh Compile Push --root . --GithubToken "${{ secrets.GITHUB_TOKEN }}"
-
+        run: pwsh ./scripts/publish.ps1 "xxx" -WorkingFolder ./src -Verbose -WhatIf
 
       - name: Build Release and Publish
         if: ${{ github.event_name == 'release' || github.event_name == 'workflow_dispatch' }}
-        run: pwsh ./scripts/publish.ps1 "${{ secrets.GITHUB_TOKEN }}" -WorkingFolder ./src -Verbose
-          # cd ./SingleFileCSharp
-          # . ./build.sh Compile Push --root . --GithubToken "${{ secrets.GITHUB_TOKEN }}"
+        run: pwsh ./scripts/publish.ps1 "${{ secrets.NUGET_KEY }}" -WorkingFolder ./src -Verbose
                                                                                                       
