@@ -48,7 +48,7 @@ static void WriteFile(string text, string fileName)
 {
     if (text.Length > 0)
     {
-        FileInfo.WriteAllText(fileName, text);
+        File.WriteAllText(fileName, text);
 
         Console.WriteLine($"Saved: {fileName}");
     }
