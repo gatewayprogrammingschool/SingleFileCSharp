@@ -32,7 +32,7 @@ foreach (var filename in mdFiles)
     var fi = new FileInfo(filename);
     var basename = fi.Name[0..(fi.Name.LastIndexOf('.'))];
     var pageNumber = 0;
-    var currentName = Path.Combine(wd, $"{basename}-{++pageNumber}.md");
+    var currentName = Path.Combine(wd, basename, $"{basename}-{pageNumber++}.md");
 
     while (!reader.EndOfStream)
     {
@@ -42,7 +42,7 @@ foreach (var filename in mdFiles)
         {
             WriteFile(sb.ToString(), currentName);
             sb.Clear();
-            currentName = Path.Combine(wd, $"{basename}-{++pageNumber}.md");
+            currentName = Path.Combine(wd, basename, $"{basename}-{pageNumber++}.md");
         }
 
         sb.AppendLine(line);
