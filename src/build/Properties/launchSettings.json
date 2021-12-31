@@ -2,7 +2,7 @@
   "profiles": {
     "_build": {
         "commandName": "Project",
-        "commandLineArgs": "-workingfolder C:\\\\Users\\\\kingd\\\\ToMarkdown -Solution C:\\Users\\kingd\\ToMarkdown\\ToMarkdown.sln -- c:\\users\\kingd\\ToMarkdown",
+        "commandLineArgs": "-workingfolder C:\\Users\\kingd\\ToMarkdown -Solution C:\\Users\\kingd\\ToMarkdown\\ToMarkdown.sln -- c:\\users\\kingd\\ToMarkdown",
         "workingDirectory": "C:\\GitHub\\GPS\\SingleFileCSharp\\SfcsTemplate\\src"
     }
   }
