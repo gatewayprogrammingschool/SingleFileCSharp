@@ -21,8 +21,14 @@ foreach (var filename in mdFiles)
 
     var fi = new FileInfo(filename);
     var basename = fi.Name[0..(fi.Name.LastIndexOf('.'))];
+    var baseDirectory = Path.Combine(wd, basename);
     var pageNumber = 0;
-    var currentName = Path.Combine(wd, basename, $"{basename}-{pageNumber++}.md");
+    var currentName = Path.Combine(baseDirectory, $"{basename}-{pageNumber++}.md");
+
+    if (!Directory.Exists(baseDirectory))
+    {
+        Directory.CreateDirectory(baseDirectory);
+    }
 
     while (!reader.EndOfStream)
     {
@@ -32,7 +38,7 @@ foreach (var filename in mdFiles)
         {
             WriteFile(sb.ToString(), currentName);
             sb.Clear();
-            currentName = Path.Combine(wd, basename, $"{basename}-{pageNumber++}.md");
+            currentName = Path.Combine(baseDirectory, $"{basename}-{pageNumber++}.md");
         }
 
         sb.AppendLine(line);
