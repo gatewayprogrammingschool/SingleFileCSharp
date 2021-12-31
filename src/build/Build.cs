@@ -7,6 +7,8 @@
 
 namespace SingleFileCSharp;
 
+using static StringComparison;
+
 [ CheckBuildProjectConfigurations, ShutdownDotNetAfterServerBuild, ]
 partial class Build : NukeBuild
 {
@@ -75,9 +77,17 @@ partial class Build : NukeBuild
                         continue;
                     }
 
+                    var index = Environment.CommandLine.IndexOf(" -- ", Ordinal);
+                    var args = "";
+                    if (index > -1)
+                    {
+                        args = Environment.CommandLine[index..];
+                    }
+
                     ProcessStartInfo info = new()
                     {
                         FileName = path,
+                        Arguments = args,
                         WorkingDirectory = Path.GetDirectoryName(path),
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
