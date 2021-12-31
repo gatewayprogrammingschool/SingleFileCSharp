@@ -77,7 +77,7 @@ partial class Build : NukeBuild
                         continue;
                     }
 
-                    var index = Environment.CommandLine.IndexOf(" -- ", Ordinal);
+                    var index = Environment.CommandLine.IndexOf(" -- ", Ordinal) + " -- ".Length;
                     var args = "";
                     if (index > -1)
                     {
