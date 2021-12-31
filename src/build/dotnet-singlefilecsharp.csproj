@@ -71,4 +71,12 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.1.0-1.final" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="..\.nuke\parameters.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.nuke\parameters.json" />
+  </ItemGroup>
+
 </Project>
