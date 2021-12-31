@@ -17,9 +17,9 @@ foreach (var filename in mdFiles)
 {
     var sb = new StringBuilder();
 
-    using var reader = new StreamReader(System.IO.File.OpenRead(filename));
+    var reader = new StreamReader(System.IO.File.OpenRead(filename));
 
-    var fi = new FileInfo(reader);
+    var fi = new FileInfo(filename);
     var basename = fi.Name[0..(fi.Name.LastIndexOf('.'))];
     var pageNumber = 0;
     var currentName = $"{basename}-{++pageNumber}.md";
@@ -38,12 +38,15 @@ foreach (var filename in mdFiles)
         sb.AppendLine(line);
     }
 
+    reader.Close();
+    reader.Dispose();
+
     WriteFile(sb.ToString(), currentName);
 }
 
 static void WriteFile(string text, string fileName)
 {
-    if (sb.Length > 0)
+    if (text.Length > 0)
     {
         FileInfo.WriteAllText(fileName, text);
 
