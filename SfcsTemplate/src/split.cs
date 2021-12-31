@@ -7,6 +7,8 @@
 ///     Nullable: Enable
 ///     DefaultNamespace: MarkdownSplitter
 
+using System.Text;
+
 var wd = ".";
 
 if (args.Length > 0)
